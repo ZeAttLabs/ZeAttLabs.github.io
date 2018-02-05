@@ -214,7 +214,7 @@
 
         function getLog2() {
             var web4 = new Web3();
-            web4.setProvider(new web4.providers.HttpProvider('https://api.myetherapi.com/eth'));
+            web4.setProvider(new setProvider(new web4.providers.HttpProvider('https://kovan.infura.io/Jt0sW1Y9QOVpoh2lDKCQ')));
             var filter = web4.eth.filter('pending');
             filter.watch(function(error, result) {
                 if (!error) {
