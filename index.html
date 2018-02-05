@@ -205,10 +205,9 @@
         });
         console.log(5);
         function getLog() {
-            console.log('xxx');
             question = $("#question").val();
             console.log(question);
-            wolf.askRomulus(question,(err,result) => { console.log(result);}); // gets the tx hash
+            wolf.askRomulus(question,(err,result) => { $("#answer").val(result);}); // gets the tx hash
             console.log(wolf.lastBlock);
         }
 
