@@ -1,276 +1,126 @@
 <HTML>
 
 <head>
-    <title>Token Request Generator</title>
-    <script src="inc/web3.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="inc/bootstrap.min.css">
-    <script src="inc/jquery.min.js"></script>
-    <script src="inc/bootstrap.min.js"></script>
-    <script>
-        function start() {
+  <title>Token Request Generator</title>
+  <script src="inc/web3.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="inc/bootstrap.min.css">
+  <script src="inc/jquery.min.js"></script>
+  <script src="inc/bootstrap.min.js"></script>
+  <script>
+    function start() {
 
-            // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-            if (typeof web3 !== 'undefined') {
-                // Use Mist/MetaMask's provider
-                web3js = new Web3(web3.currentProvider);
-                return true;
-            } else {
-                web3 = new Web3();
-                //web3.setProvider(new web3.providers.HttpProvider('https://api.myetherapi.com/eth'));
-                web3.setProvider(new web3.providers.HttpProvider('https://kovan.infura.io/Jt0sW1Y9QOVpoh2lDKCQ'));
-                return true;
-            }
+      // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+      if (typeof web3 !== 'undefined') {
+        // Use Mist/MetaMask's provider
+        web3js = new Web3(web3.currentProvider);
+        return true;
+      } else {
+        web3 = new Web3();
+        web3.setProvider(new web3.providers.HttpProvider('https://api.myetherapi.com/eth'));
+        return true;
+      }
+
+      // Now you can start your app & access web3 freely:
+      //startApp()
+
+    }
+
+
+
+    function getBalance() {
+      if (!start()) return;
+      var addr = $("#address").val();
+      var tokenAddress = "0x221535cbced4c264e53373d81b73c29d010832a5";
+      var saleAddress = "0xcc3572f8f39643890746e09e0f908ef7153b2a6b";
+      var tknAddress = (addr).substring(2);
+      var contractData = ('0x70a08231000000000000000000000000' + tknAddress); // get token balance
+      var authData =     ('0xd6eb1bbf000000000000000000000000' + tknAddress); // is authorised
+      web3.eth.call({
+        to: tokenAddress, // Contract address, used call the token balance of the address in question
+        data: contractData // Combination of contractData and tknAddress, required to call the balance of an address 
+      }, function (err, result) {
+        if (result) {
+          //var tokens = web3.utils.toBN(result).toString(); // Convert the result to a usable number string
+          //console.log('Tokens Owned: ' + web3.utils.fromWei(tokens, 'ether')); // Change the string to be in Ether not Wei, and show it in the console
+          $("#balance").val(web3.fromWei(result))
+          console.log(web3.fromWei(result))
         }
-
-        start()
-
-
-        var address = '0x9dd85c8234b3e9ef218323f536aa2f30bd9b0c05';
-        var abi = `[
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "romulus",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "lastQBlock",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "counter",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "name": "asker",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "name": "nonce",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "name": "answer",
-                    "type": "string"
-                }
-            ],
-            "name": "Remus",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "name": "asker",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "name": "nonce",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "name": "question",
-                    "type": "string"
-                }
-            ],
-            "name": "Romulus",
-            "type": "event"
-        },
-        {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "question",
-                    "type": "string"
-                }
-            ],
-            "name": "askRomulus",
-            "outputs": [],
-            "payable": true,
-            "stateMutability": "payable",
-            "type": "function"
-        },
-        {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "asker",
-                    "type": "address"
-                },
-                {
-                    "name": "question",
-                    "type": "uint256"
-                },
-                {
-                    "name": "answer",
-                    "type": "string"
-                },
-                {
-                    "name": "questionBlock",
-                    "type": "uint256"
-                }
-            ],
-            "name": "letRomulusReply",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "name": "_auth",
-                    "type": "address"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "constructor"
+        else {
+          console.log(err); // Dump errors here
         }
-    ]`;
-        let wolf = web3.eth.contract(JSON.parse(abi)).at(address);
-
-        var remusEvent = wolf.Remus({},{fromBlock: 0,toBlock: 'latest'});
-        console.log(1)
-        remusEvent.watch(function(error,result){
-            if (!error)
-            {
-                console.log('on watch');
-                console.log(result);
-                console.log(result.args);
-            } else {
-                console.log(error);
-            }
-        })
-        console.log(2)
-        var remusTopic = web3.sha3('Remus(address,uint256,string)')
-        console.log(remusTopic);
-        const filter = web3.eth.filter({
-            fromBlock: 0,
-            toBlock: 'latest',
-            address: address,
-            topics: [remusTopic]
-        })
-        console.log(3)
-        filter.watch((error, result) => {
-            console.log('filter watch');
-            console.log(error);
-            console.log(result);
-            //
-        })
-        console.log(4);
-        wolf.Romulus(function (err, data) {
-            if (err)
-                console.error(err)
-            if (data)
-                console.log(`Romulus: `,data.question);
-        });
-        console.log(5);
-        function getLog() {
-            question = $("#question").val();
-            console.log(question);
-            wolf.askRomulus(question,(err,result) => { $("#answer").val(result);}); // gets the tx hash
-            console.log(wolf.lastBlock);
+      });
+      web3.eth.call({
+        to: saleAddress, // Contract address, used call the token balance of the address in question
+        data: authData // Combination of contractData and tknAddress, required to call the balance of an address 
+      }, function (err, result) {
+        if (result) {
+          //var tokens = web3.utils.toBN(result).toString(); // Convert the result to a usable number string
+          //console.log('Tokens Owned: ' + web3.utils.fromWei(tokens, 'ether')); // Change the string to be in Ether not Wei, and show it in the console
+          //$("#balance").val(web3.fromWei(result))
+          if (result == '0x0000000000000000000000000000000000000000000000000000000000000001') {
+            $("#wl").val('YES')
+          }
+          if (result == '0x0000000000000000000000000000000000000000000000000000000000000000') {
+            $("#wl").val('NO')
+          }
+          console.log(result)
         }
-
-        function getLog2() {
-            var web4 = new Web3();
-            web4.setProvider(new setProvider(new web4.providers.HttpProvider('https://kovan.infura.io/Jt0sW1Y9QOVpoh2lDKCQ')));
-            var filter = web4.eth.filter('pending');
-            filter.watch(function(error, result) {
-                if (!error) {
-                    web4.eth.getTransaction(result, function(error, data) {
-                    if (!error) $("#newTxs tr:first").after(''+data.from+''+data.to+' '+web4.fromWei(data.value,'ether').toString()+' ETH ');
-                    });
-                }
-            });
-
+        else {
+          console.log(err); // Dump errors here
         }
-    </script>
+      });
+    }
+  </script>
 </head>
 
 <body>
-    <br/>
-    <br/>
-    <div class="container">
-        <hr>
+  <br/>
+  <br/>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4  col-md-offset-4">
+        <h1>Check Moolah Status</h1>
+        <h2>查看您的 Cloud Moolah 余额</h2>
+      </div>
+    </div>
+    <hr>
 
-        <div class="col-md-4 col-md-offset-4">
-            <div class="row">
-                <div class="col-xs-12">
-                    <h1>Ask Romulus</h1>
-                    <h2>(AMA session)</h2>
-                </div>
+  <div class="col-md-4 col-md-offset-4">
+    <div class="row">
+      <div class="row">
+          <img src="images/download-metamask-dark.png" class="img-thumbnail" id="mm"  alt="Metamask" style="display:none;">
+      </div>
+      
+        <div class="row">
+          <div class="col-md-9">
+            <div class="form-group">
+              <label>Address</label>
+              <input class="form-control" name="address" id="address" width=50></input>
             </div>
-            <div class="row">
-                <div class="row">
-                    <img src="images/download-metamask-dark.png" class="img-thumbnail" id="mm" alt="Metamask" style="display:none;">
-                </div>
+          </div>
 
-                <div class="row">
-                    <div class="col-md-9">
-                        <div class="form-group">
-                            <label>Question</label>
-                            <input class="form-control" name="question" id="question" width=50></input>
-                        </div>
-                    </div>
+          <div class="col-md-2">
+            <label>&nbsp;</label>
+            <button id="selToken" class="btn btn-primary" type="button" onclick="javascript:getBalance();">Get Token Balance
 
-                    <div class="col-md-2">
-                        <label>&nbsp;</label>
-                        <button id="selToken" class="btn btn-primary" type="button" onclick="javascript:getLog();">Ask Romulus
-
-                        </button>
-                    </div>
-                </div>
-
-
-            </div>
-            <div class="row">
-                <label>Answer</label>
-                <input class="form-control" name=answer id="answer" readonly></input>
-            </div>
-
+            </button>
+          </div>
         </div>
 
+      
     </div>
+    <div class="row">
+      <label>Whitelisted?</label>
+      <input class="form-control" name=wl id="wl" readonly></input>
+  </div>
+  <div class="row">
+    <label>Token Balance</label>
+    <input class="form-control" name=token id="balance" readonly></input>
+</div>
+
+  </div>
+  </div>
 </body>
 
 </html>
