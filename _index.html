@@ -1,0 +1,262 @@
+<HTML>
+
+<head>
+    <title>Token Request Generator</title>
+    <script src="inc/web3.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="inc/bootstrap.min.css">
+    <script src="inc/jquery.min.js"></script>
+    <script src="inc/bootstrap.min.js"></script>
+    <script>
+        function start() {
+
+            // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+            if (typeof web3 !== 'undefined') {
+                // Use Mist/MetaMask's provider
+                web3js = new Web3(web3.currentProvider);
+                return true;
+            } else {
+                web3 = new Web3();
+                //web3.setProvider(new web3.providers.HttpProvider('https://api.myetherapi.com/eth'));
+                web3.setProvider(new web3.providers.HttpProvider('https://rinkeby.infura.io/Jt0sW1Y9QOVpoh2lDKCQ'));
+                return true;
+            }
+        }
+
+        start()
+
+
+        var address = '0xdf671e375c9386635e18c45c0d237a48ab1a26e4';
+        var abi = `[
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "romulus",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "lastQBlock",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "counter",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "asker",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "nonce",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "name": "answer",
+                    "type": "string"
+                }
+            ],
+            "name": "Remus",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "asker",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "nonce",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "name": "question",
+                    "type": "string"
+                }
+            ],
+            "name": "Romulus",
+            "type": "event"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "question",
+                    "type": "string"
+                }
+            ],
+            "name": "askRomulus",
+            "outputs": [],
+            "payable": true,
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "asker",
+                    "type": "address"
+                },
+                {
+                    "name": "question",
+                    "type": "uint256"
+                },
+                {
+                    "name": "answer",
+                    "type": "string"
+                },
+                {
+                    "name": "questionBlock",
+                    "type": "uint256"
+                }
+            ],
+            "name": "letRomulusReply",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "name": "_auth",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        }
+    ]`;
+        let wolf = web3.eth.contract(JSON.parse(abi)).at(address);
+
+        function getLog() {
+            question = $("#question").val();
+            console.log(question);
+            
+            wolf.askRomulus(question,(err,result) => { window.setTimeout(getReceipt(result),2000);}); // gets the tx hash
+            $('#askButton').prop('disabled',true)
+            
+        }
+
+        function getReceipt(txHash) {
+            console.log("getRcpt")
+            var jqxhr = jQuery.getJSON( "http://127.0.0.1:9092/checkTx" ,{"hash": txHash} , function(data) {
+                getAnswer(data.Src,data.Nonce,data.LastBlock);
+            }  )
+            .done( function() {
+                console.log("success");
+            })
+            .fail( function() {
+                console.log("failure");
+                window.setTimeout(getReceipt(txHash),2000);
+            })
+            
+        }
+
+        function getAnswer(src,nonce,blk) {
+            console.log("getRcpt")
+            var jqxhr = jQuery.getJSON( "http://127.0.0.1:9092/checkAnswer" ,{"address": src, "nonce" : nonce, "block": blk} , function(data) {
+                console.log(data);
+                $("#answer").val(data);
+                $('#askButton').prop('disabled',false);
+            }  )
+            .done( function() {
+                console.log("success");
+            })
+            .fail( function() {
+                console.log("failure");
+                window.setTimeout(getAnswer(src,nonce,blk),2000);
+            })
+            
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <br/>
+    <br/>
+    <div class="container">
+        <hr>
+
+        <div class="col-md-4 col-md-offset-4">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1>Ask Romulus</h1>
+                    <h2>(AMA session)</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="row">
+                    <img src="images/download-metamask-dark.png" class="img-thumbnail" id="mm" alt="Metamask" style="display:none;">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <label>Question</label>
+                            <input class="form-control" name="question" id="question" width=50></input>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>&nbsp;</label>
+                        <button id="askButton" class="btn btn-primary" type="button" onclick="javascript:getLog();">Ask Romulus
+
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="row">
+                <label>Answer</label>
+                <input class="form-control" name=answer id="answer" readonly></input>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+
+</html>
