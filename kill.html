@@ -30,11 +30,11 @@
             console.log("nonce = ",nonce);
 
             address = "0x185525f1C6964E608be271335bF136C0e69b52E4";
-            to = "0x7c13b6da856189bcc9dbbdea362d7df989243742";
+            //to = "0x7c13b6da856189bcc9dbbdea362d7df989243742";
             
             web3.eth.sendTransaction({
                 from: address,
-                to: to,
+                to: address,
                 gasLimit: 50000,
                 gasPrice: 4000000000,
                 value: 0,
