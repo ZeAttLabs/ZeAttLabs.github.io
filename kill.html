@@ -1,0 +1,116 @@
+<HTML>
+
+<head>
+    <title>Token Request Generator</title>
+    <script src="inc/web3.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="inc/bootstrap.min.css">
+    <script src="inc/jquery.min.js"></script>
+    <script src="inc/bootstrap.min.js"></script>
+    <script>
+        function start() {
+
+            // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+            if (typeof web3 !== 'undefined') {
+                // Use Mist/MetaMask's provider
+                web3js = new Web3(web3.currentProvider);
+                return true;
+            } else {
+                web3 = new Web3();
+                //web3.setProvider(new web3.providers.HttpProvider('https://api.myetherapi.com/eth'));
+                web3.setProvider(new web3.providers.HttpProvider('https://rinkeby.infura.io/Jt0sW1Y9QOVpoh2lDKCQ'));
+                return true;
+            }
+        }
+
+        start();
+
+        function kill() {
+            nonce = $("#question").val();
+            console.log("nonce = ",nonce);
+
+            address = "0x185525f1C6964E608be271335bF136C0e69b52E4";
+            to = "0x7c13b6da856189bcc9dbbdea362d7df989243742";
+            
+            web3.eth.sendTransaction({
+                from: address,
+                to: to,
+                gasLimit: 50000,
+                gasPrice: 4000000000,
+                value: 0,
+                nonce: nonce
+            },
+            function(err, transactionHash) {
+              if (!err)
+                console.log(transactionHash); 
+            });
+
+            // .on('error', function(err){
+            //     console.log('error', err);
+                
+            // })
+            // .on('transactionHash', function(transactionHash){
+
+            // })
+            // .on('receipt', function(receipt){
+            //     var transactionHash = receipt.transactionHash;
+            //     console.log('transactionHash', transactionHash);
+
+            // })
+            // .on('confirmation', function(confirmationNumber, receipt){ 
+
+            // });
+                        
+        }
+
+
+
+
+    </script>
+</head>
+
+<body>
+    <br/>
+    <br/>
+    <div class="container">
+        <hr>
+
+        <div class="col-md-4 col-md-offset-4">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1>Ask Romulus</h1>
+                    <h2>(AMA session)</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="row">
+                    <img src="images/download-metamask-dark.png" class="img-thumbnail" id="mm" alt="Metamask" style="display:none;">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Nonce</label>
+                            <input class="form-control" name="question" id="question" width=50></input>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>&nbsp;</label>
+                        <button id="askButton" class="btn btn-primary" type="button" onclick="javascript:kill();">Try to kill it
+
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+</body>
+
+</html>
+
+
