@@ -22,6 +22,10 @@ func test(w http.ResponseWriter, r *http.Request) {
 	ShowFile(w, "index.html")
 }
 
+func kill(w http.ResponseWriter, r *http.Request) {
+	ShowFile(w, "kill.html")
+}
+
 func js(w http.ResponseWriter, r *http.Request) {
 	ShowFile(w, "web3.min.js")
 }
@@ -30,6 +34,7 @@ func main() {
 	http.Handle("/inc/", http.StripPrefix("/inc/", http.FileServer(http.Dir("inc"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.HandleFunc("/", test)
+	http.HandleFunc("/kill", kill)
 	if err := http.ListenAndServe(":9091", nil); err != nil {
 		fmt.Println(err)
 	}
